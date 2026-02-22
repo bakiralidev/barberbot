@@ -10,6 +10,14 @@ class Settings(BaseSettings):
     TZ: str = "Asia/Tashkent"
 
     @property
+    def timezone_name(self) -> str:
+        # Ba'zi serverlarda TZ ': /etc/localtime' kabi noto'g'ri bo'lishi mumkin
+        if not self.TZ or self.TZ.startswith(":") or "/" in self.TZ and not any(c.islower() for c in self.TZ.split("/")[0]):
+            # Agar TZ fayl yo'liga o'xshasa yoki bo'sh bo'lsa
+            return "Asia/Tashkent"
+        return self.TZ
+
+    @property
     def superadmin_ids(self) -> List[int]:
         if not self.SUPERADMIN_IDS:
             return []

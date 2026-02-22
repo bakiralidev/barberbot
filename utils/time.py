@@ -4,7 +4,7 @@ from datetime import datetime, time, date, timedelta
 import pytz
 from core.config import settings
 
-TZ = pytz.timezone(settings.TZ)
+TZ = pytz.timezone(settings.timezone_name)
 
 def now() -> datetime:
     return datetime.now(TZ)
