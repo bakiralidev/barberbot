@@ -65,5 +65,9 @@ def create_app():
     return app
 
 if __name__ == "__main__":
+    import os
     app = create_app()
-    web.run_app(app, host="127.0.0.1", port=8080)
+    # Alwaysdata PORT o'zgaruvchisini beradi, topsa shuni ishlatadi, aks holda 8080
+    port = int(os.environ.get("PORT", 8080))
+    logger.info(f"Starting server on port {port}")
+    web.run_app(app, host="127.0.0.1", port=port)
