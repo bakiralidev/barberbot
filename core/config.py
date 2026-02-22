@@ -9,15 +9,6 @@ class Settings(BaseSettings):
     SUPERADMIN_IDS: str = "" # Comma-separated string from env
     TZ: str = "Asia/Tashkent"
 
-    # Webhook settings
-    WEBHOOK_HOST: str = "https://yourdomain.alwaysdata.net"
-    WEBHOOK_PATH: str = "/webhook"
-    WEBHOOK_SECRET: str = "your_secret_token" # Telegram-ga yuboriladigan maxfiy token
-
-    @property
-    def webhook_url(self) -> str:
-        return f"{self.WEBHOOK_HOST}{self.WEBHOOK_PATH}"
-
     @property
     def timezone_name(self) -> str:
         # Ba'zi serverlarda TZ ': /etc/localtime' kabi noto'g'ri bo'lishi mumkin
