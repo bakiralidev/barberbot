@@ -1,0 +1,11 @@
+﻿# requirements.txt
+aiogram>=3.4.0
+pydantic>=2.0
+pydantic-settings>=2.0
+sqlalchemy>=2.0.0
+asyncpg>=0.29.0
+alembic>=1.13.0
+pytz
+python-dotenv
+greenlet
+apscheduler
