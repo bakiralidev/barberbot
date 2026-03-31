@@ -1,4 +1,32 @@
 from aiogram.fsm.context import FSMContext
+from aiogram import Router, F
+from aiogram.types import Message, CallbackQuery
+from aiogram.filters import Command
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from datetime import time, datetime
+import re
+
+from db.models import Appointment, AppointmentStatus, Service, WorkSchedule, User
+from services.booking import cancel_booking
+from services.admin import (
+    get_all_services, toggle_service_active, create_service, 
+    get_work_schedule, update_work_schedule_day, get_admins, set_admin_role,
+    delete_service, update_service, get_setting, set_setting
+)
+from services.booking import reschedule_booking, SlotOccupiedError
+from bot.keyboards.admin import (
+    admin_booking_action_kb, admin_menu_kb, admin_services_kb, 
+    admin_service_edit_kb, admin_schedule_kb, admins_list_kb, admin_role_kb, manage_admin_kb,
+    admin_settings_kb, edit_info_kb, manual_services_kb
+)
+from bot.keyboards.client import main_menu_kb
+from bot.states import AdminState
+from core.config import settings
+from utils.time import from_utc
+
+router = Router()
+
 # --- HANDLER: ISH VAQTINI O'ZGARTIRISH (SOAT) ---
 @router.callback_query(F.data.startswith("adm_sch_time_"))
 async def admin_sch_time_edit(callback: CallbackQuery, state: FSMContext, session: AsyncSession):
@@ -42,41 +70,6 @@ async def admin_sch_time_end(message: Message, state: FSMContext, session: Async
         await message.answer("Jadval yangilandi!", reply_markup=admin_schedule_kb(days))
     except Exception:
         await message.answer("Noto'g'ri format. Masalan: 18:00")
-
-
-# --- HANDLERS FOR WORK HOURS (must be after router = Router()) ---
-# (Moved below router = Router())
-
-# bot/handlers/admin.py
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
-from aiogram.fsm.context import FSMContext
-from aiogram.filters import Command
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from datetime import time, datetime
-import re
-
-from db.models import Appointment, AppointmentStatus, Service, WorkSchedule, User
-from services.booking import cancel_booking
-from services.admin import (
-    get_all_services, toggle_service_active, create_service, 
-    get_work_schedule, update_work_schedule_day, get_admins, set_admin_role,
-    delete_service, update_service, get_setting, set_setting
-)
-from services.booking import reschedule_booking, SlotOccupiedError
-from bot.keyboards.admin import (
-    admin_booking_action_kb, admin_menu_kb, admin_services_kb, 
-    admin_service_edit_kb, admin_schedule_kb, admins_list_kb, admin_role_kb, manage_admin_kb,
-    admin_settings_kb, edit_info_kb, manual_services_kb
-)
-from bot.keyboards.client import main_menu_kb
-from bot.states import AdminState
-from core.config import settings
-
-from utils.time import from_utc
-
-router = Router()
 
 # --- HANDLER: ISH VAQTINI O'ZGARTIRISH ---
 @router.callback_query(F.data == "edit_work_hours")
