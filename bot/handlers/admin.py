@@ -1,3 +1,47 @@
+from aiogram.fsm.context import FSMContext
+# --- HANDLER: ISH VAQTINI O'ZGARTIRISH (SOAT) ---
+@router.callback_query(F.data.startswith("adm_sch_time_"))
+async def admin_sch_time_edit(callback: CallbackQuery, state: FSMContext, session: AsyncSession):
+    user = await ensure_admin_user(callback.from_user.id, session)
+    if not can_access_admin_panel(user):
+        await callback.answer("Kirish rad etildi", show_alert=True)
+        return
+    weekday = int(callback.data.split("_")[-1])
+    # Save weekday in FSM
+    await state.update_data(edit_schedule_weekday=weekday)
+    await state.set_state(AdminState.edit_schedule_start)
+    await callback.message.answer("Boshlanish vaqtini kiriting (masalan, 09:00):")
+
+# --- FSM: Boshlanish va Tugash vaqtini qabul qilish ---
+@router.message(AdminState.edit_schedule_start)
+async def admin_sch_time_start(message: Message, state: FSMContext, session: AsyncSession):
+    try:
+        start_time = datetime.strptime(message.text.strip(), "%H:%M").time()
+        await state.update_data(edit_schedule_start=start_time)
+        await state.set_state(AdminState.edit_schedule_end)
+        await message.answer("Tugash vaqtini kiriting (masalan, 18:00):")
+    except Exception:
+        await message.answer("Noto'g'ri format. Masalan: 09:00")
+
+@router.message(AdminState.edit_schedule_end)
+async def admin_sch_time_end(message: Message, state: FSMContext, session: AsyncSession):
+    try:
+        end_time = datetime.strptime(message.text.strip(), "%H:%M").time()
+        data = await state.get_data()
+        weekday = data['edit_schedule_weekday']
+        start_time = data['edit_schedule_start']
+        # Update schedule in DB
+        # Get current day_off status
+        query = select(WorkSchedule).where(WorkSchedule.weekday == weekday)
+        res = await session.execute(query)
+        day = res.scalar_one_or_none()
+        is_day_off = day.is_day_off if day else False
+        await update_work_schedule_day(session, weekday, is_day_off, start_time, end_time)
+        await state.clear()
+        days = await get_work_schedule(session)
+        await message.answer("Jadval yangilandi!", reply_markup=admin_schedule_kb(days))
+    except Exception:
+        await message.answer("Noto'g'ri format. Masalan: 18:00")
 
 
 # --- HANDLERS FOR WORK HOURS (must be after router = Router()) ---

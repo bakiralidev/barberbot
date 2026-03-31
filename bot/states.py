@@ -20,6 +20,7 @@ class AdminState(StatesGroup):
     edit_service_buffer = State()
     edit_schedule_start = State()
     edit_schedule_end = State()
+    edit_schedule_time = State()
     
     # Admin Management
     add_admin_id = State()

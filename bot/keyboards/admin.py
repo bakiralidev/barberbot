@@ -69,13 +69,12 @@ def admin_schedule_kb(days) -> InlineKeyboardMarkup:
         day = days_map.get(i)
         status = "🔴" if not day or day.is_day_off else "🟢"
         builder.button(text=f"{weekdays[i]} {status}", callback_data=f"adm_sch_edit_{i}")
-    
-    builder.adjust(2) # Days in pairs
-    
+        # Add time edit button for each day
+        builder.button(text="Soatni o'zgartirish", callback_data=f"adm_sch_time_{i}")
+    builder.adjust(2, 2) # 2 columns for days, 2 for time edit
     # Append footer buttons as separate rows
     builder.row(InlineKeyboardButton(text="🔄 Yangilash", callback_data="adm_sch_refresh"))
     builder.row(InlineKeyboardButton(text="⬅️ Orqaga", callback_data="adm_main_menu"))
-    
     return builder.as_markup()
 
 def admins_list_kb(admins) -> InlineKeyboardMarkup:

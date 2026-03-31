@@ -23,11 +23,13 @@ def services_kb(services) -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 def dates_kb() -> InlineKeyboardMarkup:
+    from utils.time import format_date_uz
     builder = InlineKeyboardBuilder()
     today = get_today()
     for i in range(7):
         d = today + timedelta(days=i)
-        builder.button(text=d.strftime("%Y-%m-%d (%a)"), callback_data=f"date_{d.isoformat()}")
+        label = format_date_uz(d)
+        builder.button(text=label, callback_data=f"date_{d.isoformat()}")
     builder.adjust(2)
     builder.row(InlineKeyboardButton(text="⬅️ Orqaga", callback_data="back_main"))
     return builder.as_markup()
