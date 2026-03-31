@@ -29,7 +29,18 @@ from bot.keyboards.admin import (
 from bot.keyboards.client import main_menu_kb
 from bot.states import AdminState
 from core.config import settings
+
 from utils.time import from_utc
+
+# --- HANDLER: ISH VAQTINI O'ZGARTIRISH ---
+@router.callback_query(F.data == "edit_work_hours")
+async def admin_edit_work_hours(callback: CallbackQuery, session: AsyncSession):
+    user = await ensure_admin_user(callback.from_user.id, session)
+    if not can_access_admin_panel(user):
+        await callback.answer("Kirish rad etildi", show_alert=True)
+        return
+    days = await get_work_schedule(session)
+    await callback.message.edit_text("Jadval (Yashil=Ochiq, Qizil=Yopiq):", reply_markup=admin_schedule_kb(days))
 
 router = Router()
 
