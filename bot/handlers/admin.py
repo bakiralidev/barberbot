@@ -1,3 +1,6 @@
+
+# --- HANDLERS FOR WORK HOURS (must be after router = Router()) ---
+
 @router.callback_query(F.data == "edit_work_hours")
 async def admin_edit_work_hours_start(callback: CallbackQuery, state: FSMContext, session: AsyncSession):
     user = await ensure_admin_user(callback.from_user.id, session)
@@ -75,19 +78,6 @@ async def admin_edit_work_hours_start_time(message: Message, state: FSMContext):
         await message.answer("Yangi tugash vaqtini kiriting (masalan, 18:00):")
     except Exception:
         await message.answer("Noto'g'ri format. Masalan: 09:00")
-
-@router.message(AdminState.edit_schedule_end)
-async def admin_edit_work_hours_end_time(message: Message, state: FSMContext, session: AsyncSession):
-    try:
-        t = datetime.strptime(message.text.strip(), "%H:%M").time()
-        data = await state.get_data()
-        weekday = data['edit_work_hours_weekday']
-        start = datetime.strptime(data['edit_work_hours_start'], "%H:%M:%S").time() if ':' in data['edit_work_hours_start'] else datetime.strptime(data['edit_work_hours_start'], "%H:%M").time()
-        await update_work_schedule_day(session, weekday, False, start, t)
-        await message.answer("✅ Ish vaqti saqlandi!")
-        await state.clear()
-    except Exception:
-        await message.answer("Noto'g'ri format. Masalan: 18:00")
 
 # bot/handlers/admin.py
 from aiogram import Router, F
