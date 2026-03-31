@@ -106,10 +106,13 @@ def manage_admin_kb(admin_id: int) -> InlineKeyboardMarkup:
 def admin_settings_kb(deposit_enabled: bool) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text="💳 Karta raqamini o'zgartirish", callback_data="set_card_number")
-    
+
+    # New button for editing work hours
+    builder.button(text="⏰ Ish vaqtini o'zgartirish", callback_data="edit_work_hours")
+
     dep_text = "✅ Depozit (10%): Yoqilgan" if deposit_enabled else "❌ Depozit (10%): O'chirilgan"
     builder.button(text=dep_text, callback_data="toggle_deposit")
-    
+
     builder.button(text="📸 Portfoliya kanali (ID)", callback_data="set_portfolio_channel")
     builder.button(text="🔗 Portfoliya linki (t.me/...)", callback_data="set_portfolio_link")
     builder.button(text="➕ Portfoliyaga rasm qo'shish", callback_data="add_portfolio_works")

@@ -75,21 +75,24 @@ async def get_slots(session: AsyncSession, service_id: int, target_date: date) -
     res = await session.execute(appointments_query)
     appointments = res.scalars().all()
 
+    from utils.time import format_date_uz
     all_slots = []
     for slot in slots:
         slot_end = slot + timedelta(minutes=total_duration)
         slot_utc = to_utc(slot)
         slot_end_utc = to_utc(slot_end)
-        
+
         is_taken = False
         for app in appointments:
             if (slot_utc < app.ends_at) and (slot_end_utc > app.starts_at):
                 is_taken = True
                 break
-        
+
+        # Add formatted date label for UI
         all_slots.append({
             "time": slot,
-            "available": not is_taken
+            "available": not is_taken,
+            "label": f"{format_date_uz(slot.date())} {slot.strftime('%H:%M')}"
         })
 
     return all_slots

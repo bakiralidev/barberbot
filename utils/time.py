@@ -22,3 +22,22 @@ def get_today() -> date:
 
 def combine_date_time(d: date, t: time) -> datetime:
     return TZ.localize(datetime.combine(d, t))
+
+# Uzbek weekday names, 0=Monday
+UZ_WEEKDAYS = [
+    "Dushanba",
+    "Seshanba",
+    "Chorshanba",
+    "Payshanba",
+    "Juma",
+    "Shanba",
+    "Yakshanba"
+]
+
+def format_date_uz(dt: date) -> str:
+    """
+    (hafta nomi)/kun/oy/yil formatda o'zbek tilida qaytaradi.
+    dt: datetime.date yoki datetime.datetime
+    """
+    weekday = UZ_WEEKDAYS[dt.weekday()]
+    return f"{weekday}/{dt.day:02}/{dt.month:02}/{dt.year}"
