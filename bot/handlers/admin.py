@@ -32,6 +32,8 @@ from core.config import settings
 
 from utils.time import from_utc
 
+router = Router()
+
 # --- HANDLER: ISH VAQTINI O'ZGARTIRISH ---
 @router.callback_query(F.data == "edit_work_hours")
 async def admin_edit_work_hours(callback: CallbackQuery, session: AsyncSession):
@@ -41,8 +43,6 @@ async def admin_edit_work_hours(callback: CallbackQuery, session: AsyncSession):
         return
     days = await get_work_schedule(session)
     await callback.message.edit_text("Jadval (Yashil=Ochiq, Qizil=Yopiq):", reply_markup=admin_schedule_kb(days))
-
-router = Router()
 
 @router.callback_query(F.data.startswith("taken_"))
 async def slot_taken_admin(callback: CallbackQuery):
